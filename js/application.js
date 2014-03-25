@@ -70,9 +70,7 @@ $(function(){
     // The DOM events specific to an item.
     events: {
       "click .add"			: "toggleAdded",
-      "click a.destroy" : "clear",
-      "keypress .edit"  : "updateOnEnter",
-      "blur .edit"      : "close"
+      "click a.destroy" : "clear"
     },
 
     // The RegistryView listens for changes to its model, re-rendering. Since there's
@@ -102,27 +100,6 @@ $(function(){
 			$('li#no-items').addClass('hide');
 			$('#cart').append(html);
 		},
-    // Switch this view into `"editing"` mode, displaying the input field.
-    edit: function() {
-      this.$el.addClass("editing");
-      this.input.focus();
-    },
-
-    // Close the `"editing"` mode, saving changes to the registry.
-    close: function() {
-      var value = this.input.val();
-      if (!value) {
-        this.clear();
-      } else {
-        this.model.save({title: value});
-        this.$el.removeClass("editing");
-      }
-    },
-
-    // If you hit `enter`, we're through editing the item.
-    updateOnEnter: function(e) {
-      if (e.keyCode == 13) this.close();
-    },
 
     // Remove the item, destroy the model.
     clear: function() {
@@ -144,8 +121,6 @@ $(function(){
     // Delegated events for creating new items, and clearing completed ones.
     events: {
       "keypress #new-registry":  "createOnEnter",
-      "click #clear-completed": "clearCompleted",
-      "click #toggle-all": "toggleAllComplete"
     },
 
     // At initialization we bind to the relevant events on the `Registry`
@@ -221,29 +196,7 @@ $(function(){
     // Add all items in the **Registry** collection at once.
     addAll: function() {
       Registry.each(this.addOne, this);
-    },
-
-    // If you hit return in the main input field, create new **Registry** model,
-    // persisting it to *localStorage*.
-    createOnEnter: function(e) {
-      if (e.keyCode != 13) return;
-      if (!this.input.val()) return;
-
-      Registry.create({title: this.input.val()});
-      this.input.val('');
-    },
-
-    // Clear all done registry items, destroying their models.
-    clearCompleted: function() {
-      _.invoke(Registry.done(), 'destroy');
-      return false;
-    },
-
-    toggleAllComplete: function () {
-      var done = this.allCheckbox.checked;
-      Registry.each(function (item) { item.save({'purchased': purchased}); });
     }
-
   });
 
   // Finally, we kick things off by creating the **App**.
